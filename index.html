@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>우리 반 랜덤 학생 뽑기</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: 칠판에 잘 어울리는 손글씨 느낌 및 깔끔한 글꼴 -->
+    <link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@700&family=Noto+Sans+KR:wght@500;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #1b4332; /* 진한 칠판 초록색 */
+            background-image: 
+                radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.05) 0%, transparent 80%),
+                linear-gradient(to bottom, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.3));
+        }
+
+        /* 칠판 테두리 우드 프레임 느낌 */
+        .chalkboard-frame {
+            border: 12px solid #8d5b4c;
+            border-radius: 1.5rem;
+            box-shadow: 
+                inset 0 0 20px rgba(0, 0, 0, 0.6),
+                0 10px 25px rgba(0, 0, 0, 0.5);
+        }
+
+        /* 분필 느낌의 글씨 분출 효과 */
+        .chalk-text {
+            font-family: 'Gowun Batang', serif;
+            color: #ffffff;
+            text-shadow: 
+                0 0 2px rgba(255, 255, 255, 0.8),
+                0 0 8px rgba(255, 255, 255, 0.4);
+        }
+
+        /* 분필가루/지우개 흔적 느낌의 배경 질감 효과 */
+        .chalk-dust {
+            background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 0);
+            background-size: 24px 24px;
+        }
+
+        /* 텍스트 애니메이션 */
+        @keyframes pop {
+            0% { transform: scale(0.8); opacity: 0.5; }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .animate-pop {
+            animation: pop 0.3s ease-out forwards;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4 select-none">
+
+    <main class="w-full max-w-xl chalkboard-frame bg-[#1e4620] chalk-dust p-8 md:p-12 text-center text-white relative overflow-hidden">
+        
+        <!-- 상단 타이틀 -->
+        <header class="mb-8">
+            <h1 class="text-xl md:text-2xl font-bold opacity-80 tracking-widest border-b-2 border-dashed border-white/30 pb-3 inline-block">
+                ✨ 우리 반 학생 뽑기 ✨
+            </h1>
+        </header>
+
+        <!-- 결과 출력 영역 -->
+        <section class="my-12 min-h-[160px] flex items-center justify-center">
+            <div id="nameDisplay" class="chalk-text text-5xl sm:text-6xl md:text-7xl font-black tracking-wider transition-all duration-100">
+                ?
+            </div>
+        </section>
+
+        <!-- 컨트롤 버튼 -->
+        <footer class="mt-8">
+            <button 
+                id="drawBtn" 
+                onclick="drawRandomStudent()"
+                class="bg-white text-[#1b4332] hover:bg-slate-100 active:scale-95 transition-all duration-150 font-black text-xl md:text-2xl px-10 py-4 rounded-full shadow-lg border-2 border-emerald-900 focus:outline-none focus:ring-4 focus:ring-white/50 cursor-pointer">
+                뽑기!
+            </button>
+        </footer>
+
+        <!-- 하단 분필 받침대 장식 -->
+        <div class="absolute bottom-2 right-6 opacity-40 text-xs flex gap-2">
+            <div class="w-8 h-2 bg-white rounded-sm"></div>
+            <div class="w-6 h-2 bg-yellow-200 rounded-sm"></div>
+        </div>
+    </main>
+
+    <script>
+        // 1. 학생 목록 명단 (필요에 따라 수정하거나 추가하세요)
+        const students = [
+            "김철수", "이영희", "박민수", "홍길동",
+            "정수진", "최동현", "강지민", "윤서준",
+            "임하은", "한지후", "오유진", "서건우"
+        ];
+
+        const nameDisplay = document.getElementById('nameDisplay');
+        const drawBtn = document.getElementById('drawBtn');
+        let isSpinning = false;
+
+        // 2. 랜덤 뽑기 함수
+        function drawRandomStudent() {
+            if (isSpinning) return;
+            isSpinning = true;
+            drawBtn.disabled = true;
+            drawBtn.classList.add('opacity-50', 'cursor-not-allowed');
+
+            let counter = 0;
+            const totalTicks = 20; // 스롯 느낌 효과 횟수
+            const speed = 70; // 바꾸는 속도(ms)
+
+            // 빠르게 이름이 바뀌는 셔플 애니메이션
+            const interval = setInterval(() => {
+                const randomIndex = Math.floor(Math.random() * students.length);
+                nameDisplay.textContent = students[randomIndex];
+                nameDisplay.classList.remove('animate-pop');
+                counter++;
+
+                if (counter >= totalTicks) {
+                    clearInterval(interval);
+                    
+                    // 최종 당첨자 추첨
+                    const finalIndex = Math.floor(Math.random() * students.length);
+                    nameDisplay.textContent = students[finalIndex];
+                    nameDisplay.classList.add('animate-pop');
+
+                    // 상태 원복
+                    isSpinning = false;
+                    drawBtn.disabled = false;
+                    drawBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                }
+            }, speed);
+        }
+    </script>
+</body>
+</html>
